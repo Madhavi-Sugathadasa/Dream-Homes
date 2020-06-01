@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block title %}
+Dream Homes
+{% endblock %}
+{% block body %}
+{% load template_filters %}
+{% load humanize %}
+<ul class="nav nav-tabs nav-tabs-top border-0 ">
+    <li class="nav-item ">
+        <a class="nav-link nav-link-top border-0 text-dark  mr-1 {% if not search_type or search_type != 'rent' %}active bg-light-grey{% else %}bg-dark-grey{% endif %}" id="buy_tab" href="#">Buy</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link nav-link-top text-dark mr-1 {% if search_type and search_type == 'rent' %}active bg-light-grey{% else %}bg-dark-grey{% endif %}" id="rent_tab" href="#">Rent</a>
+    </li>
+</ul>
+<div class="bg-light-grey m-0 p-3 {% if search_type and search_type == 'rent' %}d-none{% endif %}" id="buy_div">
+    <form action="{% url 'index' %}" method="post" id="filterForm_buy">
+        {% csrf_token %}
+        <div class="form-group row">
+            <div class="col-lg-3 ">
+                <label class="m-0" for="property_type">I'm seeking</label>
+                <select id="property_type" name="property_type" class="form-control">
+                    <option value="ALL" selected>All Property Types</option>
+                    {% for property_type in property_types %}
+                    {% if property_type_val and property_type.code == property_type_val %}
+                    <option value="{{property_type.code}}" selected>{{property_type.name}}</option>
+                    {% else %}
+                    <option value="{{property_type.code}}">{{property_type.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-8 ">
+                <label class="m-0" for="location">in</label><span class="float-right"><label class="m-0" for="surrounding">include surrounding areas</label> <input type="checkbox" name="surrounding" id="surrounding" {% if search_type == 'get' or search_type == 'rent' or surrounding %}checked{% endif %}></span>
+                <div id="location-div"><input type="text" id="location" name="location" class="form-control" placeholder="Suburb, State, Postcode" value="{% if location_val %}{{location_val}}{% endif %}" required></div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-1">
+                <label class="m-0" for="bedrooms">bedrooms</label>
+                <select id="bedrooms" name="bedrooms" class="form-control">
+                    <option value="ANY" selected>Any</option>
+                    {% for bedroom in bedrooms %}
+                    {% if bedrooms_val and bedroom.code == bedrooms_val %}
+                    <option value="{{bedroom.code}}" selected>{{bedroom.name}}</option>
+                    {% else %}
+                    <option value="{{bedroom.code}}">{{bedroom.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-1">
+                <label class="m-0" for="bathrooms">bathrooms</label>
+                <select id="bathrooms" name="bathrooms" class="form-control">
+                    <option value="ANY" selected>Any</option>
+                    {% for bathroom in bathrooms %}
+                    {% if bathrooms_val and bathroom.code == bathrooms_val %}
+                    <option value="{{bathroom.code}}" selected>{{bathroom.name}}</option>
+                    {% else %}
+                    <option value="{{bathroom.code}}">{{bathroom.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-1">
+                <label class="m-0" for="parking">parking</label>
+                <select id="parking" name="parking" class="form-control">
+                    <option value="ANY" selected>Any</option>
+                    {% for parking in parkings %}
+                    {% if parking_val and parking.code == parking_val %}
+                    <option value="{{parking.code}}" selected>{{parking.name}}</option>
+                    {% else %}
+                    <option value="{{parking.code}}">{{parking.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-5">
+                <label class="m-0" for="slider">to suit a budget of about</label>
+                <input type="hidden" id="price_range" name="price_range" value="{% if price_range_val >= 0%}{{price_range_val}}{% else %}9000000{% endif %}">
+                <div id="slider"></div>
+                <label for="slider" id="budget_range">Budget range:
+                {% if price_range_val == 0 %}
+                <span id="price"> Any</span>
+                {% elif not price_range_val %}
+                <span id="price"> $0 - $9M</span>
+                {% elif price_range_val >= 10000000 %}
+                <span id="price"> $10M+</span>
+                {% else %}
+                <span id="price"> $0 - ${{price_range_val|num_format}}</span>
+                {% endif %}
+                </label>
+
+            </div>
+            <div class="col-lg-3">
+                <a href="#" id="clear_selections" class="btn btn-warning text-dark float-right border-info">Clear All Selections</a>
+                <input type="submit" value="Search" class="btn btn-warning text-dark border-info float-right mr-2">
+
+            </div>
+
+        </div>
+        <input type="hidden" id="sort" name="sort" value="{% if sort_val%}{{sort_val}}{% else %}MR{% endif %}">
+        <input type="hidden" name="search_type" value="buy">
+        <input type="hidden" name="page" value="1" id="buy_page">
+    </form>
+</div>
+
+<div class="bg-light-grey m-0 p-3 {% if not search_type or search_type != 'rent' %}d-none{% endif %}" id="rent_div">
+    <form action="{% url 'index' %}" method="post" id="filterForm_rent">
+        {% csrf_token %}
+        <div class="form-group row">
+            <div class="col-lg-3 ">
+                <label class="m-0" for="rent_property_type">I'm seeking</label>
+                <select id="rent_property_type" name="rent_property_type" class="form-control">
+                    <option value="ALL" selected>All Property Types</option>
+                    {% for property_type in property_types %}
+                    {% if rent_property_type_val and property_type.code == rent_property_type_val %}
+                    <option value="{{property_type.code}}" selected>{{property_type.name}}</option>
+                    {% else %}
+                    <option value="{{property_type.code}}">{{property_type.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-8 ">
+                <label class="m-0" for="rent_location">in</label><span class="float-right"><label class="m-0" for="rent_surrounding">include surrounding areas</label> <input type="checkbox" name="rent_surrounding" id="rent_surrounding" {% if search_type == 'get' or search_type == 'buy' or rent_surrounding %}checked{% endif %}></span>
+                <div id="location-div"><input type="text" id="rent_location" name="rent_location" class="form-control" placeholder="Suburb, State, Postcode" value="{% if rent_location %}{{rent_location}}{% endif %}" required></div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-1">
+                <label class="m-0" for="rent_bedrooms">bedrooms</label>
+                <select id="rent_bedrooms" name="rent_bedrooms" class="form-control">
+                    <option value="ANY" selected>Any</option>
+                    {% for bedroom in bedrooms %}
+                    {% if rent_bedrooms_val and bedroom.code == rent_bedrooms_val %}
+                    <option value="{{bedroom.code}}" selected>{{bedroom.name}}</option>
+                    {% else %}
+                    <option value="{{bedroom.code}}">{{bedroom.name}}</option>
+                    {% endif %}
+
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-1">
+                <label class="m-0" for="rent_bathrooms">bathrooms</label>
+                <select id="rent_bathrooms" name="rent_bathrooms" class="form-control">
+                    <option value="ANY" selected>Any</option>
+                    {% for bathroom in bathrooms %}
+                    {% if rent_bathrooms_val and bathroom.code == rent_bathrooms_val %}
+                    <option value="{{bathroom.code}}" selected>{{bathroom.name}}</option>
+                    {% else %}
+                    <option value="{{bathroom.code}}">{{bathroom.name}}</option>
+                    {% endif %}
+
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-1">
+                <label class="m-0" for="rent_parking">parking</label>
+                <select id="rent_parking" name="rent_parking" class="form-control">
+                    <option value="ANY" selected>Any</option>
+                    {% for parking in parkings %}
+                    {% if rent_parking_val and parking.code == rent_parking_val %}
+                    <option value="{{parking.code}}" selected>{{parking.name}}</option>
+                    {% else %}
+                    <option value="{{parking.code}}">{{parking.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-5">
+                <label class="m-0" for="rent_slider">to suit a budget of about (per week)</label>
+                <input type="hidden" id="rent_price_range" name="rent_price_range" value="{% if rent_price_range >= 0 %}{{rent_price_range}}{% else %}1400{% endif %}">
+                <div id="rent_slider"></div>
+                <label for="rent_slider">Budget range:
+                {% if rent_price_range == 0 %}
+                <span id="rent_price"> Any</span>
+                {% elif not rent_price_range %}
+                <span id="rent_price"> $0 - $1400</span>
+                {% elif rent_price_range >= 1500 %}
+                <span id="rent_price"> $1500+</span>
+                {% else %}
+                <span id="rent_price"> $0 - ${{rent_price_range|to_int}}</span>
+                {% endif %}
+                 </label>
+
+            </div>
+            <div class="col-lg-3">
+                <a href="#" id="rent_clear_selections" class="btn btn-warning border-info text-dark float-right">Clear All Selections</a>
+                <input type="submit" value="Search" class="btn btn-warning border-info text-dark float-right mr-2">
+
+            </div>
+
+        </div>
+        <input type="hidden" id="sort_rent" name="sort" value="{% if sort_val%}{{sort_val}}{% else %}MR{% endif %}">
+        <input type="hidden" name="search_type" value="rent">
+        <input type="hidden" name="page" value="1" id="rent_page">
+    </form>
+</div>
+
+{% if search_type != 'get' %}
+<div class="sort_list">
+    <input type="hidden" id="Selected_Search_form" value="{{search_type}}">
+    <div class="btn-group">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            &#8593;&#8595; SORT BY
+        </button>
+        <div class="dropdown-menu">
+            {% if sort_val %}
+            <a class="dropdown-item {% if sort_val == 'MR'%}active{% endif %}" href="#" id="most_recent">Most Recent Listings</a>
+            <a class="dropdown-item {% if sort_val == 'AZ'%}active{% endif %}" href="#" id="location_A_Z">Location (A - Z)</a>
+            <a class="dropdown-item {% if sort_val == 'ZA'%}active{% endif %}" href="#" id="location_Z_A">Location (Z - A)</a>
+            <a class="dropdown-item {% if sort_val == 'HL'%}active{% endif %}" href="#" id="most_expensive">Price (High - Low)</a>
+            <a class="dropdown-item {% if sort_val == 'LH'%}active{% endif %}" href="#" id="cheapest">Price (Low - High)</a>
+            {% else %}
+            <a class="dropdown-item active" id="most_recent">Most Recent Listings</a>
+            <a class="dropdown-item" href="#" id="location_A_Z">Location (A - Z)</a>
+            <a class="dropdown-item" href="#" id="location_Z_A">Location (Z - A)</a>
+            <a class="dropdown-item" href="#" id="most_expensive">Price (High - Low)</a>
+            <a class="dropdown-item" href="#" id="cheapest">Price (Low - High)</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if page_obj %}
+<div class="row m-auto">
+    {% for ad_item in page_obj%}
+    <div class="col-lg-4 col-md-6 my-3">
+        <div class="card border-info m-auto" style="width: 18rem;">
+            <div id="carouselExampleFade_{{ad_item.id}}" class="carousel slide carousel-fade" data-ride="carousel">
+                <div class="carousel-inner">
+                    {% for photo_item in photo_items|get_item:ad_item.id %}
+                    {% if forloop.counter == 1 %}
+                    <div class="carousel-item active">
+                        <img src="/Media/{{photo_item.image}}" class="card-img-top img-search-res"  alt="img_{{forloop.counter}}">
+                    </div>
+                    {% else %}
+                    <div class="carousel-item">
+                        <img src="/Media/{{photo_item.image}}" class="card-img-top img-search-res" alt="img_{{forloop.counter}}">
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleFade_{{ad_item.id}}" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleFade_{{ad_item.id}}" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+
+            <div class="card-body">
+                <h6 class="card-text"><span class="m-1">{{ad_item.bedrooms}} <i class="fa fa-bed"></i> </span><span class="m-1">{{ad_item.bathrooms}} <i class="fa fa-bath"></i> </span> <span class="m-1">{{ad_item.parking}} <i class="fa fa-car"></i></span></h6>
+                <p class="card-text m-1">{{ad_item.address_line}}</p>
+                <p class="card-text m-1">{{ad_item.location}}</p>
+                {% if search_type == 'rent' %}
+                <p class="card-text m-1">${{ad_item.weekly_price|to_int|intcomma}} Weekly</p>
+                {% else %}
+                {% if ad_item.from_price == 0.0 %}
+                <p class="card-text m-1">{{ad_item.ad_type}}</p>
+                {% elif ad_item.from_price > 0.0  and ad_item.to_price == 0.0 %}
+                <p class="card-text m-1">${{ad_item.from_price|to_int|intcomma}}</p>
+                {% elif ad_item.from_price > 0.0  and ad_item.to_price > 0.0 %}
+                <p class="card-text m-1">${{ad_item.from_price|to_int|intcomma}} - ${{ad_item.to_price|to_int|intcomma}}</p>
+                {% endif %}
+                {% endif %}
+                {% if search_type == 'rent' %}
+                <a href="{% url 'ad_more_details' ad_item.id 'rent' %}" class="btn btn-warning text-dark border-info">Details</a>
+                {% else %}
+                <a href="{% url 'ad_more_details' ad_item.id 'buy' %}" class="btn btn-warning text-dark border-info">Details</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="border border-info rounded my-3 p-2 text-center">No Items Found.</div>
+{% endif %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a class="page-selection text-info" href="#"  data-page="1" data-search="{{search_type}}">&laquo; first</a>
+        <a class="page-selection text-info" href="#"  data-page="{{page_obj.previous_page_number}}" data-search="{{search_type}}" >previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a class="page-selection text-info" href="#" data-page="{{page_obj.next_page_number}}" data-search="{{search_type}}" >next</a>
+        <a class="page-selection text-info" href="#"  data-page="{{page_obj.paginator.num_pages}}" data-search="{{search_type}}" >last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endif %}
+{% endblock %}
