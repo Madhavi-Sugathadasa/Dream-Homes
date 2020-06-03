@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Email</title>
+</head>
+
+<body>
+    <p><strong>Propert Id</strong> : {{property_id}}</p>
+    <p><strong>Address:</strong> {{address}}</p>
+    <p><strong>First Name:</strong> {{first_name}}</p>
+    <p><strong>Last Name:</strong> {{last_name}}</p>
+    <p><strong>Contact email:</strong> {{email}}</p>
+    {% if mobile %}
+    <p><strong>Mobile:</strong> {{mobile}}</p>
+    {% endif %}
+    <p><strong>Message:</strong></p>  
+    <p>{{message|linebreaks}}</p>
+</body>
+
+</html>
