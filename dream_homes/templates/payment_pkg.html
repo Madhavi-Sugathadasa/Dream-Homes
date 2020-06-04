@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}
+Post an Ad
+{% endblock %}
+{% block body %}
+{% load template_filters %}
+
+{% if ad_type and ad_type == 'rent' %}
+<div class="bg-light-grey m-0 p-5">
+    <form action="{% url 'payment_packages' ad_id 'rent' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h4 class="my-3">Select your preferred ad package</h4>
+        <div class="form-group row">
+
+            <div class="card text-white bg-info ml-3 mb-3 pkg-card-width pkg-selected" id="rent-card-std">
+                <div class="card-header">STANDARD AD <i id="rent_std_select" class="fa fa-check"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$250 until rented</h5>
+                    <p class="card-text">Appear in search results.</p>
+                    <a href="#" id="rent_btn_std" class="btn btn-warning text-dark">Select</a>
+                </div>
+            </div>
+
+            <div class="card text-dark bg-warning ml-3 mb-3 pkg-card-width" id="rent-card-prm">
+                <div class="card-header">PREMIUM AD <i id="rent_prm_select" class="fa fa-check d-none"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$400 until rented</h5>
+                    <p class="card-text">Appear <strong>higher</strong> in search results.</p>
+                    <a href="#" id="rent_btn_prm" class="btn btn-info">Select</a>
+                </div>
+            </div>
+            <input type="hidden" id="rent_payment_pkg" name="rent_payment_pkg" value="STD">
+        </div>
+      
+        <input type="hidden" name="ad_type" value="rent">
+        <button type="submit" class="btn btn-warning text-dark border-info">Go to Payment</button>
+    </form>
+</div>
+{% else %}
+<div class="bg-light-grey m-0 p-5">
+    <form action="{% url 'payment_packages' ad_id 'sale' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h4 class="my-3">Select your preferred ad package</h4>
+        <div class="form-group row">
+
+            <div class="card text-white bg-info ml-3 mb-3 pkg-card-width pkg-selected" id="card-std">
+                <div class="card-header">STANDARD AD <i id="std_select" class="fa fa-check"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$750 until sold</h5>
+                    <p class="card-text">Appear in search results.</p>
+                    <a href="#" id="btn_std" class="btn btn-warning text-dark">Select</a>
+                </div>
+            </div>
+
+            <div class="card text-dark bg-warning ml-3 mb-3 pkg-card-width" id="card-prm">
+                <div class="card-header">PREMIUM AD <i id="prm_select" class="fa fa-check d-none"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$1000 until sold</h5>
+                    <p class="card-text">Appear <strong>higher</strong> in search results.</p>
+                    <a href="#" id="btn_prm" class="btn btn-info">Select</a>
+                </div>
+            </div>
+            <input type="hidden" id="payment_pkg" name="payment_pkg" value="STD">
+        </div>
+
+        <input type="hidden" name="ad_type" value="sale">
+        <button type="submit" class="btn btn-warning text-dark border-info">Go to Payment</button>
+
+    </form>
+</div>
+{% endif %}
+
+{% endblock %}
