@@ -1,0 +1,473 @@
+{% extends "base.html" %}
+{% block title %}
+Post an Ad
+{% endblock %}
+{% block body %}
+{% load template_filters %}
+
+<ul class="nav nav-tabs nav-tabs-top border-0 ">
+    <li class="nav-item ">
+        <a class="nav-link nav-link-top border-0 text-dark  mr-1 {% if not search_type or search_type != 'rent' %}active bg-light-grey{% else %}bg-dark-grey{% endif %}" id="buy_tab" href="#">Property For Sale</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link nav-link-top text-dark mr-1 {% if search_type and search_type == 'rent' %}active bg-light-grey{% else %}bg-dark-grey{% endif %}" id="rent_tab" href="#">Property For Rent</a>
+    </li>
+</ul>
+<div class="bg-light-grey m-0 p-5 {% if search_type and search_type == 'rent' %}d-none{% endif %}" id="buy_div">
+    <form action="{% url 'post_ad' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h4 class="my-3">Select your preferred ad package</h4>
+        <div class="form-group row">
+
+            <div class="card text-white bg-info ml-3 mb-3 pkg-card-width pkg-selected" id="card-std">
+                <div class="card-header">STANDARD AD <i id="std_select" class="fa fa-check"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$750 until sold</h5>
+                    <p class="card-text">Appear in search results.</p>
+                    <a href="#" id="btn_std" class="btn btn-warning text-dark">Select</a>
+                </div>
+            </div>
+
+            <div class="card text-dark bg-warning ml-3 mb-3 pkg-card-width" id="card-prm">
+                <div class="card-header">PREMIUM AD <i id="prm_select" class="fa fa-check d-none"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$1000 until sold</h5>
+                    <p class="card-text">Appear <strong>higher</strong> in search results.</p>
+                    <a href="#" id="btn_prm" class="btn btn-info">Select</a>
+                </div>
+            </div>
+            <input type="hidden" id="payment_pkg" name="payment_pkg" value="STD">
+        </div>
+
+
+        <div class="form-group row">
+            <label for="from_price" class="col-sm-2 col-form-label">From Price (AUD)</label>
+            <div class="col-sm-6 ">
+                <input name="from_price" id="from_price" class="form-control" type="number" min="0" placeholder="From Price">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="to_price" class="col-sm-2 col-form-label">To Price (AUD)</label>
+            <div class="col-sm-6 ">
+                <input name="to_price" id="to_price" class="form-control" type="number" min="0" placeholder="To Price">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="ad_type" class="col-sm-2 col-form-label">Ad Type</label>
+            <div class="col-sm-6 ">
+                <select name="ad_type" id="ad_type" class="form-control">
+                    {% for ad_type in ad_types %}
+                    <option value="{{ad_type.id}}">{{ad_type.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="title" class="col-sm-2 col-form-label">Title</label>
+            <div class="col-sm-6 ">
+                <input name="title" id="title" class="form-control" type="text" placeholder="A descriptive title will attract buyers to your ad." required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="description" class="col-sm-2 col-form-label">Description</label>
+            <div class="col-sm-6 form-desc">
+                <textarea name="description" id="description" class="form-control h-100" type="text" placeholder="Description" required></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="property_type" class="col-sm-2 col-form-label">Property Type</label>
+            <div class="col-sm-6 ">
+                <select name="property_type" id="property_type" class="form-control">
+                    {% for property_type in property_types %}
+                    <option value="{{property_type.code}}">{{property_type.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="action_date" class="col-sm-2 col-form-label">Auction Date</label>
+            <div class="col-sm-4 ">
+                <input name="action_date" id="action_date" class="form-control" type="datetime-local" placeholder="Auction date">
+
+            </div>
+            <div class="col-sm-2 ">
+                <a href="#" id="auction_clear" class="btn btn-warning text-dark border-info">Reset date</a>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="address_line" class="col-sm-2 col-form-label">Address Line</label>
+            <div class="col-sm-6">
+                <input type="text" id="address_line" name="address_line" class="form-control" placeholder="Address Line" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="location" class="col-sm-2 col-form-label">Location</label>
+            <div class="col-sm-6">
+                <div id="location-div">
+                    <input type="text" id="location" name="location" class="form-control" placeholder="Suburb, State, Postcode" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="bedrooms" class="col-sm-2 col-form-label">Bedrooms</label>
+            <div class="col-sm-2 ">
+                <select name="bedrooms" id="bedrooms" class="form-control">
+                    {% for bedroom in bedrooms %}
+                    <option value="{{bedroom}}">{{bedroom}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="bathrooms" class="col-sm-2 col-form-label">Bathrooms</label>
+            <div class="col-sm-2">
+                <select name="bathrooms" id="bathrooms" class="form-control">
+                    {% for bathroom in bathrooms %}
+                    <option value="{{bathroom}}">{{bathroom}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="parking" class="col-sm-2 col-form-label">Parking</label>
+            <div class="col-sm-2 ">
+                <select name="parking" id="parking" class="form-control">
+                    {% for pkr in parking %}
+                    <option value="{{pkr}}">{{pkr}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="garages" class="col-sm-2 col-form-label">Garages</label>
+            <div class="col-sm-2 ">
+                <select name="garages" id="garages" class="form-control">
+                    {% for garage in garages %}
+                    <option value="{{garage}}">{{garage}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="land_area" class="col-sm-2 col-form-label">Land Area</label>
+            <div class="col-sm-6 ">
+                <input name="land_area" id="land_area" class="form-control" type="text" placeholder="Land Area">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="contact_name" class="col-sm-2 col-form-label">Contact Name</label>
+            <div class="col-sm-6 ">
+                <input name="contact_name" id="contact_name" class="form-control" type="text" placeholder="Contact Name" value="{% if user.first_name %}{{user.first_name }}{% endif %}" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="contact_email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-6 ">
+                <input name="contact_email" id="contact_email" class="form-control" type="text" placeholder="Contact Email" value="{% if user.email %}{{user.email}}{% endif %}" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="mobile" class="col-sm-2 col-form-label">Mobile</label>
+            <div class="col-sm-6 ">
+                <input name="mobile" id="mobile" class="form-control" type="text" placeholder="Mobile Phone Number" required>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="floorplan" class="col-sm-2 col-form-label">Floorplan</label>
+            <div class="col-sm-6">
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="floorplan" id="floorplan">
+                    <label class="custom-file-label" for="floorplan">Upload a Floorplan image</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="img_1" class="col-sm-2 col-form-label">Uplaod Photos</label>
+            <div class="col-sm-6">
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="img_1" id="img_1" required>
+                    <label class="custom-file-label" for="img_1">Choose Image 1</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="img_2" id="img_2">
+                    <label class="custom-file-label" for="img_2">Choose Image 2</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="img_3" id="img_3">
+                    <label class="custom-file-label" for="img_3">Choose Image 3</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="img_4" id="img_4">
+                    <label class="custom-file-label" for="img_4">Choose Image 4</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="img_5" id="img_5">
+                    <label class="custom-file-label" for="img_5">Choose Image 5</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="img_6" id="img_6">
+                    <label class="custom-file-label" for="img_6">Choose Image 6</label>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="ins_date_1" class="col-sm-2 col-form-label">Upcoming Inspections</label>
+            <div class="col-sm-4 ">
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="ins_date_1" id="ins_date_1" class="form-control mb-3" type="date">
+                    Start Time: <input name="ins_from_time_1" id="ins_from_time_1" class="form-control mb-3" type="time">
+                    End Time: <input name="ins_to_time_1" id="ins_to_time_1" class="form-control mb-3" type="time">
+                    <a href="#" id="insp_clear_1" class="btn btn-warning text-dark border-info" data-insp-counter="1">Reset</a>
+                </div>
+
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="ins_date_2" id="ins_date_2" class="form-control mb-3" type="date">
+                    Start Time: <input name="ins_from_time_2" id="ins_from_time_2" class="form-control mb-3" type="time">
+                    End Time: <input name="ins_to_time_2" id="ins_to_time_2" class="form-control mb-3" type="time">
+                    <a href="#" id="insp_clear_2" class="btn btn-warning text-dark border-info" data-insp-counter="2">Reset</a>
+                </div>
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="ins_date_3" id="ins_date_3" class="form-control mb-3" type="date">
+                    Start Time: <input name="ins_from_time_3" id="ins_from_time_3" class="form-control mb-3" type="time">
+                    End Time: <input name="ins_to_time_3" id="ins_to_time_3" class="form-control mb-3" type="time">
+                    <a href="#" id="insp_clear_3" class="btn btn-warning text-dark border-info" data-insp-counter="3">Reset</a>
+                </div>
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="ins_date_4" id="ins_date_4" class="form-control mb-3" type="date">
+                    Start Time: <input name="ins_from_time_4" id="ins_from_time_4" class="form-control mb-3" type="time">
+                    End Time: <input name="ins_to_time_4" id="ins_to_time_4" class="form-control mb-3" type="time">
+                    <a href="#" id="insp_clear_4" class="btn btn-warning text-dark border-info" data-insp-counter="4">Reset</a>
+                </div>
+
+            </div>
+        </div>
+        <div class="border border-info rounded my-3 p-3 bg-light">
+            <h5>Terms &amp; Conditions</h5>
+            <p><input type="checkbox" name="terms" required> I accept the terms &amp; conditions.</p>
+        </div>
+        <input type="hidden" name="ad_property_type" value="sale">
+        <button type="submit" class="btn btn-warning text-dark border-info" name="action" value="save">Save Ad</button>
+        <button type="submit" class="btn btn-warning text-dark border-info" name="action" value="payment">Go to Payment</button>
+
+    </form>
+</div>
+<div class="bg-light-grey m-0 p-5 {% if not search_type or search_type != 'rent' %}d-none{% endif %}" id="rent_div">
+    <form action="{% url 'post_ad' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h4 class="my-3">Select your preferred ad package</h4>
+        <div class="form-group row">
+
+            <div class="card text-white bg-info ml-3 mb-3 pkg-card-width pkg-selected" id="rent-card-std">
+                <div class="card-header">STANDARD AD <i id="rent_std_select" class="fa fa-check"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$250 until rented</h5>
+                    <p class="card-text">Appear in search results.</p>
+                    <a href="#" id="rent_btn_std" class="btn btn-warning text-dark">Select</a>
+                </div>
+            </div>
+
+            <div class="card text-dark bg-warning ml-3 mb-3 pkg-card-width" id="rent-card-prm">
+                <div class="card-header">PREMIUM AD <i id="rent_prm_select" class="fa fa-check d-none"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">$400 until rented</h5>
+                    <p class="card-text">Appear <strong>higher</strong> in search results.</p>
+                    <a href="#" id="rent_btn_prm" class="btn btn-info">Select</a>
+                </div>
+            </div>
+            <input type="hidden" id="rent_payment_pkg" name="rent_payment_pkg" value="STD">
+
+        </div>
+        <div class="form-group row">
+            <label for="weekly_price" class="col-sm-2 col-form-label">Weekly Price(AUD)</label>
+            <div class="col-sm-6 ">
+                <input name="weekly_price" id="weekly_price" class="form-control" type="number" min="0" placeholder="weekly price" required>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="rent_title" class="col-sm-2 col-form-label">Title</label>
+            <div class="col-sm-6 ">
+                <input name="rent_title" id="rent_title" class="form-control" type="text" placeholder="A descriptive title will attract buyers to your ad." required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_description" class="col-sm-2 col-form-label">Description</label>
+            <div class="col-sm-6 form-desc">
+                <textarea name="rent_description" id="rent_description" class="form-control h-100" type="text" placeholder="Description" required></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_property_type" class="col-sm-2 col-form-label">Property Type</label>
+            <div class="col-sm-6 ">
+                <select name="rent_property_type" id="rent_property_type" class="form-control">
+                    {% for property_type in property_types %}
+                    <option value="{{property_type.code}}">{{property_type.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="rent_address_line" class="col-sm-2 col-form-label">Address Line</label>
+            <div class="col-sm-6">
+                <input type="text" id="rent_address_line" name="rent_address_line" class="form-control" placeholder="Address Line" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_location" class="col-sm-2 col-form-label">Location</label>
+            <div class="col-sm-6">
+                <div id="location-div">
+                    <input type="text" id="rent_location" name="rent_location" class="form-control" placeholder="Suburb, State, Postcode" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="rent_bedrooms" class="col-sm-2 col-form-label">Bedrooms</label>
+            <div class="col-sm-2 ">
+                <select name="rent_bedrooms" id="rent_bedrooms" class="form-control">
+                    {% for bedroom in bedrooms %}
+                    <option value="{{bedroom}}">{{bedroom}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_bathrooms" class="col-sm-2 col-form-label">Bathrooms</label>
+            <div class="col-sm-2">
+                <select name="rent_bathrooms" id="rent_bathrooms" class="form-control">
+                    {% for bathroom in bathrooms %}
+                    <option value="{{bathroom}}">{{bathroom}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_parking" class="col-sm-2 col-form-label">Parking</label>
+            <div class="col-sm-2 ">
+                <select name="rent_parking" id="rent_parking" class="form-control">
+                    {% for pkr in parking %}
+                    <option value="{{pkr}}">{{pkr}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_garages" class="col-sm-2 col-form-label">Garages</label>
+            <div class="col-sm-2 ">
+                <select name="rent_garages" id="rent_garages" class="form-control">
+                    {% for garage in garages %}
+                    <option value="{{garage}}">{{garage}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="rent_contact_name" class="col-sm-2 col-form-label">Contact Name</label>
+            <div class="col-sm-6 ">
+                <input name="rent_contact_name" id="rent_contact_name" class="form-control" type="text" placeholder="Contact Name" value="{% if user.first_name %}{{user.first_name }}{% endif %}" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_contact_email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-6 ">
+                <input name="rent_contact_email" id="rent_contact_email" class="form-control" type="text" placeholder="Contact Email" value="{% if user.email %}{{user.email}}{% endif %}" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rent_mobile" class="col-sm-2 col-form-label">Mobile</label>
+            <div class="col-sm-6 ">
+                <input name="rent_mobile" id="rent_mobile" class="form-control" type="text" placeholder="Mobile Phone Number" required>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="rent_floorplan" class="col-sm-2 col-form-label">Floorplan</label>
+            <div class="col-sm-6">
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="rent_floorplan" id="rent_floorplan" >
+                    <label class="custom-file-label" for="rent_floorplan">Upload a Floorplan image</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="rent_img_1" class="col-sm-2 col-form-label">Uplaod Photos</label>
+            <div class="col-sm-6">
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="rent_img_1" id="rent_img_1" required>
+                    <label class="custom-file-label" for="rent_img_1">Choose Image 1</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="rent_img_2" id="rent_img_2">
+                    <label class="custom-file-label" for="rent_img_2">Choose Image 2</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="rent_img_3" id="rent_img_3">
+                    <label class="custom-file-label" for="rent_img_3">Choose Image 3</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="rent_img_4" id="rent_img_4">
+                    <label class="custom-file-label" for="rent_img_4">Choose Image 4</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="rent_img_5" id="rent_img_5">
+                    <label class="custom-file-label" for="rent_img_5">Choose Image 5</label>
+                </div>
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="rent_img_6" id="rent_img_6">
+                    <label class="custom-file-label" for="rent_img_6">Choose Image 6</label>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="ins_date_1" class="col-sm-2 col-form-label">Upcoming Inspections</label>
+            <div class="col-sm-4 ">
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="rent_ins_date_1" id="rent_ins_date_1" class="form-control mb-3" type="date">
+                    Start Time: <input name="rent_ins_from_time_1" id="rent_ins_from_time_1" class="form-control mb-3" type="time">
+                    End Time: <input name="rent_ins_to_time_1" id="rent_ins_to_time_1" class="form-control mb-3" type="time">
+                    <a href="#" id="rent_insp_clear_1" class="btn btn-warning text-dark border-info" data-insp-counter="1">Reset</a>
+                </div>
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="rent_ins_date_2" id="rent_ins_date_2" class="form-control mb-3" type="date">
+                    Start Time: <input name="rent_ins_from_time_2" id="rent_ins_from_time_2" class="form-control mb-3" type="time">
+                    End Time: <input name="rent_ins_to_time_2" id="rent_ins_to_time_2" class="form-control mb-3" type="time">
+                    <a href="#" id="rent_insp_clear_2" class="btn btn-warning text-dark border-info" data-insp-counter="2">Reset</a>
+                </div>
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="rent_ins_date_3" id="rent_ins_date_3" class="form-control mb-3" type="date">
+                    Start Time: <input name="rent_ins_from_time_3" id="rent_ins_from_time_3" class="form-control mb-3" type="time">
+                    End Time: <input name="rent_ins_to_time_3" id="rent_ins_to_time_3" class="form-control mb-3" type="time">
+                    <a href="#" id="rent_insp_clear_3" class="btn btn-warning text-dark border-info" data-insp-counter="3">Reset</a>
+                </div>
+                <div class="bg-dark-grey rounded my-3 p-3">
+                    Inspection Date: <input name="rent_ins_date_4" id="rent_ins_date_4" class="form-control mb-3" type="date">
+                    Start Time: <input name="rent_ins_from_time_4" id="rent_ins_from_time_4" class="form-control mb-3" type="time">
+                    End Time: <input name="rent_ins_to_time_4" id="rent_ins_to_time_4" class="form-control mb-3" type="time">
+                    <a href="#" id="rent_insp_clear_4" class="btn btn-warning text-dark border-info" data-insp-counter="4">Reset</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="border border-info rounded my-3 p-3 bg-light">
+            <h5>Terms &amp; Conditions</h5>
+            <p><input type="checkbox" name="terms" required> I accept the terms &amp; conditions.</p>
+        </div>
+        <input type="hidden" name="ad_property_type" value="rent">
+        <button type="submit" class="btn btn-warning text-dark border-info" name="action" value="save">Save Ad</button>
+        <button type="submit" class="btn btn-warning text-dark border-info" name="action" value="payment">Go to Payment</button>
+
+    </form>
+</div>
+
+{% endblock %}
