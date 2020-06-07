@@ -13,3 +13,10 @@ class Location(models.Model):
     
     def __str__(self):
         return f"{self.suburb}, {self.state}, {self.postcode}"
+    
+    
+class Property_Type(models.Model):
+    code = models.CharField(max_length=3)
+    name = models.CharField(max_length=64)
+    def __str__(self):
+        return f"{self.name} - {self.code}"
