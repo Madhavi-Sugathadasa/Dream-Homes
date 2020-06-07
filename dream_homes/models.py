@@ -33,3 +33,10 @@ class Bathroom(models.Model):
     name = models.CharField(max_length=5)
     def __str__(self):
         return f"{self.name}"
+
+    
+class Parking(models.Model):
+    code = models.IntegerField(default=0)
+    name = models.CharField(max_length=5)
+    def __str__(self):
+        return f"{self.name}"
