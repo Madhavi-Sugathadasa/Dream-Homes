@@ -20,3 +20,9 @@ class Property_Type(models.Model):
     name = models.CharField(max_length=64)
     def __str__(self):
         return f"{self.name} - {self.code}"
+    
+class Bedroom(models.Model):
+    code = models.IntegerField(default=0)
+    name = models.CharField(max_length=5)
+    def __str__(self):
+        return f"{self.name}"
