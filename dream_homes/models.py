@@ -79,5 +79,15 @@ class Buy_Ad_Item(models.Model):
     
     def __str__(self):
         return f"{self.id}: - {self.address_line}, {self.location}"
-    
+ 
+
   
+def buy_item_photo_path_(instance, filename):
+    return (conf_settings.MEDIA_PATH + '/buy_properties/{0}/{1}').format(instance.ad_item.id, filename)
+
+class Buy_Item_Picture(models.Model):
+    ad_item = models.ForeignKey(Buy_Ad_Item, on_delete=models.CASCADE, related_name="buy_ad_item")
+    image = models.ImageField(upload_to = buy_item_photo_path_)
+    
+    def __str__(self):
+        return f"{self.image}"
