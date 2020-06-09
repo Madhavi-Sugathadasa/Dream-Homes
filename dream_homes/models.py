@@ -91,3 +91,12 @@ class Buy_Item_Picture(models.Model):
     
     def __str__(self):
         return f"{self.image}"
+    
+class Buy_Item_Inspection(models.Model):
+    ad_item = models.ForeignKey(Buy_Ad_Item, on_delete=models.CASCADE, related_name="buy_inspect_ad_item")
+    date = models.DateField()
+    from_time = models.TimeField()
+    to_time = models.TimeField()
+    
+    def __str__(self):
+        return f"{self.ad_item} - {self.date} - {self.from_time} - {self.to_time}"
