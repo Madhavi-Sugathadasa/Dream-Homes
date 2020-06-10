@@ -131,3 +131,13 @@ class Rent_Ad_Item(models.Model):
     
     def __str__(self):
         return f"{self.id} - {self.title}"
+    
+def rent_item_photo_path_(instance, filename):
+    return (conf_settings.MEDIA_PATH + '/rental_properties/{0}/{1}').format(instance.ad_item.id, filename)
+
+class Rent_Item_Picture(models.Model):
+    ad_item = models.ForeignKey(Rent_Ad_Item, on_delete=models.CASCADE, related_name="rent_ad_item")
+    image = models.ImageField(upload_to = rent_item_photo_path_)
+    
+    def __str__(self):
+        return f"{self.image}"
