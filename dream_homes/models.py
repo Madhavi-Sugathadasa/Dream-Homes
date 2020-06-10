@@ -141,3 +141,14 @@ class Rent_Item_Picture(models.Model):
     
     def __str__(self):
         return f"{self.image}"
+    
+class Rent_Item_Inspection(models.Model):
+    ad_item = models.ForeignKey(Rent_Ad_Item, on_delete=models.CASCADE, related_name="rent_inpect_ad_item")
+    date = models.DateField()
+    from_time = models.TimeField()
+    to_time = models.TimeField()
+    
+    def __str__(self):
+        return f"{self.ad_item} - {self.date} - {self.from_time} - {self.to_time}"
+    
+
