@@ -14,7 +14,6 @@ class Location(models.Model):
     def __str__(self):
         return f"{self.suburb}, {self.state}, {self.postcode}"
     
-    
 class Property_Type(models.Model):
     code = models.CharField(max_length=3)
     name = models.CharField(max_length=64)
@@ -26,15 +25,13 @@ class Bedroom(models.Model):
     name = models.CharField(max_length=5)
     def __str__(self):
         return f"{self.name}"
-    
-    
+
 class Bathroom(models.Model):
     code = models.IntegerField(default=0)
     name = models.CharField(max_length=5)
     def __str__(self):
         return f"{self.name}"
 
-    
 class Parking(models.Model):
     code = models.IntegerField(default=0)
     name = models.CharField(max_length=5)
@@ -79,9 +76,9 @@ class Buy_Ad_Item(models.Model):
     
     def __str__(self):
         return f"{self.id}: - {self.address_line}, {self.location}"
- 
-
-  
+    
+    
+    
 def buy_item_photo_path_(instance, filename):
     return (conf_settings.MEDIA_PATH + '/buy_properties/{0}/{1}').format(instance.ad_item.id, filename)
 
@@ -142,6 +139,7 @@ class Rent_Item_Picture(models.Model):
     def __str__(self):
         return f"{self.image}"
     
+    
 class Rent_Item_Inspection(models.Model):
     ad_item = models.ForeignKey(Rent_Ad_Item, on_delete=models.CASCADE, related_name="rent_inpect_ad_item")
     date = models.DateField()
@@ -151,4 +149,3 @@ class Rent_Item_Inspection(models.Model):
     def __str__(self):
         return f"{self.ad_item} - {self.date} - {self.from_time} - {self.to_time}"
     
-
