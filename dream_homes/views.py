@@ -77,3 +77,9 @@ def register_view(request):
             return render(request, "users/login.html", {"message": "Invalid credentials."})
     else:
         return render(request, "users/register.html", {"message":None})
+
+    
+# logout view
+def logout_view(request):
+    logout(request)
+    return render(request, "users/login.html", {"message": None})
