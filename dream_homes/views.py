@@ -327,3 +327,15 @@ def index(request):
     return render(request, "index.html", context)
 
 
+# ajax call for location autocomplete
+def autocomplete_location(request):
+    if request.is_ajax():
+        location = request.GET.get('search', None)
+        queryset = Location.objects.filter(Q(postcode__contains=location) | Q(suburb__contains=location) | Q(state__contains=location))
+        list = []        
+        for i in queryset:
+            list.append(i.suburb+", " + i.state + ", " + i.postcode)
+        data = {
+            'list': list,
+        }
+        return JsonResponse(data)
