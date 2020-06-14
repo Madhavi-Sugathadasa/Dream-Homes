@@ -41,4 +41,39 @@ def login_view(request):
     else:
         request.session.clear()
         return render(request, "users/login.html", {"message": None})
-    
+
+#register a new user   
+def register_view(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        confirm_password = request.POST["confirm_password"]
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        email = request.POST["email"]
+
+        if not username:
+            return render(request, "users/register.html", {"message": "Must provide username."})
+        if not password:
+            return render(request, "users/register.html", {"message": "Must provide password."})
+        if password != confirm_password:
+            return render(request, "users/register.html", {"message": "Passwords didn't match."})
+        if not first_name:
+            return render(request, "users/register.html", {"message": "Must provide first name."})
+        if not last_name:
+            return render(request, "users/register.html", {"message": "Must provide last name."})
+        if not email:
+            return render(request, "users/register.html", {"message": "Must provide email."})
+
+        try:
+            User.objects.create_user(username=username, password=password,  first_name=first_name, last_name=last_name, email=email)
+        except IntegrityError:
+            return render(request, "users/register.html", {"message": "User already exists."})
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "users/login.html", {"message": "Invalid credentials."})
+    else:
+        return render(request, "users/register.html", {"message":None})
