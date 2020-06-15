@@ -1107,3 +1107,44 @@ def edit_saved_ad(request, ad_id, ad_property_type):
         garages = range(0,5)
         context ={"ad_property_type":ad_property_type, "ad_item":ad_item, "ad_types":ad_types, "property_types":property_types, "bedrooms":bedrooms, "bathrooms":bathrooms, "parking":parking, "garages":garages, "pictures":pictures, "pic_loop_times":pic_loop_times, "insepctions":insepctions, "insp_loop_times":insp_loop_times,}
         return render(request, "my_saved_ad_edit.html", context)
+
+    
+ # delete already uploaded photos
+@login_required(login_url='login')
+def delete_pic(request, ad_id, ad_type, pic_id,pic_type):
+    ad_item = None
+    try:
+        if ad_type == 'rent':
+            if pic_type == 'live':
+                ad_item = Rent_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=True)
+            else:
+                ad_item = Rent_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=False)
+        else:
+            if pic_type == 'live':
+                ad_item = Buy_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=True)
+            else:
+                ad_item = Buy_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=False)
+            
+        if not ad_item:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+        
+        if ad_type == 'rent':
+            picture = Rent_Item_Picture.objects.get(ad_item = ad_item, pk = pic_id )
+            if not picture:
+                return render(request, "error.html", {"message": "You are not authorised to update this item"})
+            picture.delete()
+        else:
+            picture = Buy_Item_Picture.objects.get(ad_item = ad_item, pk = pic_id )
+            if not picture:
+                return render(request, "error.html", {"message": "You are not authorised to update this item"})
+            picture.delete()
+            
+    except Rent_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    except Buy_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    
+    if pic_type == 'live':
+        return HttpResponseRedirect(reverse("edit_ad", args=[ad_id, ad_type]))
+    else:
+        return HttpResponseRedirect(reverse("edit_saved_ad", args=[ad_id, ad_type]))
