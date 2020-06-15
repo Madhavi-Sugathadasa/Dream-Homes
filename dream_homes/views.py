@@ -1148,3 +1148,36 @@ def delete_pic(request, ad_id, ad_type, pic_id,pic_type):
         return HttpResponseRedirect(reverse("edit_ad", args=[ad_id, ad_type]))
     else:
         return HttpResponseRedirect(reverse("edit_saved_ad", args=[ad_id, ad_type]))
+
+    
+# delete already uploaded floorplan
+@login_required(login_url='login')
+def delete_floorplan(request, ad_id, ad_type ,pic_type):
+    ad_item = None
+    try:
+        if ad_type == 'rent':
+            if pic_type == 'live':
+                ad_item = Rent_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=True)
+            else:
+                ad_item = Rent_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=False)
+        else:
+            if pic_type == 'live':
+                ad_item = Buy_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=True)
+            else:
+                ad_item = Buy_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=False)
+            
+        if not ad_item:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+        
+        ad_item.floorplan = ""
+        ad_item.save()
+            
+    except Rent_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    except Buy_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    if pic_type == 'live':
+        return HttpResponseRedirect(reverse("edit_ad", args=[ad_id, ad_type]))
+    else:
+        return HttpResponseRedirect(reverse("edit_saved_ad", args=[ad_id, ad_type]))
+    
