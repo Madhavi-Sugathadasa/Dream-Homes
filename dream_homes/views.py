@@ -598,3 +598,252 @@ def post_ad(request):
         garages = range(0,5)
         context ={"ad_types":ad_types, "property_types":property_types, "bedrooms":bedrooms, "bathrooms":bathrooms, "parking":parking, "garages":garages}
         return render(request, "post_ad.html", context)
+
+    
+# edit details of already posted Live Ad
+@login_required(login_url='login')
+def edit_ad(request, ad_id, ad_type):
+    ad_item = None
+    try:
+        if ad_type == 'rent':
+            ad_item = Rent_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=True)
+        else:
+            ad_item = Buy_Ad_Item.objects.get(user = request.user, pk = ad_id, payment=True)
+            
+        if not ad_item:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    except Rent_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    except Buy_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    if request.method == "POST":
+        try:
+            if ad_type == 'rent':
+                
+                weekly_price = request.POST["weekly_price"]
+                ad_item.weekly_price = float(weekly_price)
+                
+                title = request.POST["rent_title"]
+                ad_item.title = title
+                
+                desc = request.POST["rent_description"]
+                ad_item.desc = desc
+                
+                property_type = request.POST["rent_property_type"]
+                ad_item.property_type = Property_Type.objects.get(code=property_type)
+                
+                address_line = request.POST["rent_address_line"]
+                ad_item.address_line = address_line
+                
+                location_str = request.POST["rent_location"]
+                if location_str:
+                    location_data  = location_str.split(", ")
+                    if len(location_data) == 3:
+                        location = Location.objects.get(Q(postcode=location_data[2]) & Q(suburb=location_data[0]) & Q(state=location_data[1]))
+                        if location:
+                            ad_item.location = location
+                        else:
+                            return render(request, "error.html", {"message": "Invalid item location."})
+                    else:
+                        return render(request, "error.html", {"message": "Invalid item location."})
+                else:
+                    return render(request, "error.html", {"message": "Invalid item location."})
+                
+                bedrooms = request.POST["rent_bedrooms"]
+                ad_item.bedrooms = int(bedrooms)
+                
+                bathrooms = request.POST["rent_bathrooms"]
+                ad_item.bathrooms = int(bathrooms)
+                
+                parking = request.POST["rent_parking"]
+                ad_item.parking = int(parking)
+                
+                garages = request.POST["rent_garages"]
+                ad_item.garages = int(garages)
+                
+                contact_name = request.POST["rent_contact_name"]
+                ad_item.contact_name = contact_name
+
+                contact_email = request.POST["rent_contact_email"]
+                ad_item.email = contact_email
+
+                mobile = request.POST["rent_mobile"]
+                ad_item.mobile = mobile
+                
+                floorplan = request.FILES.get('rent_floorplan')
+                if floorplan:
+                    ad_item.floorplan = floorplan
+                
+                ad_item.save()
+                
+                for i in range(1,7):
+                    img = request.FILES.get('rent_img_' + str(i))
+                    if img:
+                        picture = Rent_Item_Picture()
+                        picture.ad_item = ad_item
+                        picture.image = img
+                        picture.save()
+                    
+                insepctions = Rent_Item_Inspection.objects.filter(ad_item = ad_item).order_by('id')
+                for i in range (1, len(insepctions)+1):
+                    ins_date = request.POST.get('rent_ins_date_' + str(i))
+                    ins_from_time = request.POST.get('rent_ins_from_time_' + str(i))
+                    ins_to_time = request.POST.get('rent_ins_to_time_' + str(i))
+                    if ins_date:
+                        insepctions[i-1].date = datetime.strptime(ins_date, '%Y-%m-%d')
+                        insepctions[i-1].from_time = datetime.strptime(ins_from_time, '%H:%M')
+                        insepctions[i-1].to_time = datetime.strptime(ins_to_time, '%H:%M')
+                        insepctions[i-1].save()
+                        
+                for i in range(len(insepctions)+1,5):
+                    ins_date = request.POST.get('rent_ins_date_' + str(i))
+                    ins_from_time = request.POST.get('rent_ins_from_time_' + str(i))
+                    ins_to_time = request.POST.get('rent_ins_to_time_' + str(i))
+                    
+                    if ins_date:
+                        insp = Rent_Item_Inspection()
+                        insp.ad_item = ad_item
+                        insp.date = datetime.strptime(ins_date, '%Y-%m-%d')
+                        insp.from_time = datetime.strptime(ins_from_time, '%H:%M')
+                        insp.to_time = datetime.strptime(ins_to_time, '%H:%M')
+                        insp.save()
+                
+            else:
+                
+                from_price = request.POST["from_price"]
+                if from_price:
+                    ad_item.from_price = float(from_price)
+                else:
+                    ad_item.from_price = 0.0
+                to_price = request.POST["to_price"]
+                if to_price:
+                    ad_item.to_price = float(to_price)
+                else:
+                    ad_item.to_price = 0.0
+                ad_type = request.POST["ad_type"]
+                ad_item.ad_type = Buy_Item_Ad_Type.objects.get(pk=ad_type)
+                
+                title = request.POST["title"]
+                ad_item.title = title
+                
+                desc = request.POST["description"]
+                ad_item.desc = desc
+                
+                property_type = request.POST["property_type"]
+                ad_item.property_type = Property_Type.objects.get(code=property_type)
+                
+                action_date = request.POST["action_date"]
+                if action_date:
+                    ad_item.auction_date = datetime.strptime(action_date, '%Y-%m-%dT%H:%M')
+                
+                address_line = request.POST["address_line"]
+                ad_item.address_line = address_line
+                
+                
+                location_str = request.POST["location"]
+                if location_str:
+                    location_data  = location_str.split(", ")
+                    if len(location_data) == 3:
+                        location = Location.objects.get(Q(postcode=location_data[2]) & Q(suburb=location_data[0]) & Q(state=location_data[1]))
+                        if location:
+                            ad_item.location = location
+                        else:
+                            return render(request, "error.html", {"message": "Invalid item location."})
+                    else:
+                        return render(request, "error.html", {"message": "Invalid item location."})
+                else:
+                    return render(request, "error.html", {"message": "Invalid item location."})
+                
+                bedrooms = request.POST["bedrooms"]
+                ad_item.bedrooms = int(bedrooms)
+                
+                bathrooms = request.POST["bathrooms"]
+                ad_item.bathrooms = int(bathrooms)
+                
+                parking = request.POST["parking"]
+                ad_item.parking = int(parking)
+                
+                garages = request.POST["garages"]
+                ad_item.garages = int(garages)
+                
+                land_area = request.POST["land_area"]
+                ad_item.land_area = land_area
+                
+                contact_name = request.POST["contact_name"]
+                ad_item.contact_name = contact_name
+
+                contact_email = request.POST["contact_email"]
+                ad_item.email = contact_email
+
+                mobile = request.POST["mobile"]
+                ad_item.mobile = mobile
+                
+                floorplan = request.FILES.get('floorplan')
+                if floorplan:
+                    ad_item.floorplan = floorplan
+            
+                
+                ad_item.save()
+                
+                for i in range(1,7):
+                    img = request.FILES.get('img_' + str(i))
+                    if img:
+                        picture = Buy_Item_Picture()
+                        picture.ad_item = ad_item
+                        picture.image = img
+                        picture.save()
+                        
+                insepctions = Buy_Item_Inspection.objects.filter(ad_item = ad_item).order_by('id')
+                for i in range (1, len(insepctions)+1):
+                    ins_date = request.POST.get('ins_date_' + str(i))
+                    ins_from_time = request.POST.get('ins_from_time_' + str(i))
+                    ins_to_time = request.POST.get('ins_to_time_' + str(i))
+                    if ins_date:
+                        insepctions[i-1].date = datetime.strptime(ins_date, '%Y-%m-%d')
+                        insepctions[i-1].from_time = datetime.strptime(ins_from_time, '%H:%M')
+                        insepctions[i-1].to_time = datetime.strptime(ins_to_time, '%H:%M')
+                        insepctions[i-1].save()
+                        
+                for i in range(len(insepctions)+1,5):
+                    ins_date = request.POST.get('ins_date_' + str(i))
+                    ins_from_time = request.POST.get('ins_from_time_' + str(i))
+                    ins_to_time = request.POST.get('ins_to_time_' + str(i))
+                    
+                    if ins_date:
+                        insp = Buy_Item_Inspection()
+                        insp.ad_item = ad_item
+                        insp.date = datetime.strptime(ins_date, '%Y-%m-%d')
+                        insp.from_time = datetime.strptime(ins_from_time, '%H:%M')
+                        insp.to_time = datetime.strptime(ins_to_time, '%H:%M')
+                        insp.save()
+                
+            return HttpResponseRedirect(reverse("my_ad_more_details",args=(ad_item.id, ad_type,)))    
+        except Buy_Item_Ad_Type.DoesNotExist:
+            return render(request, "error.html", {"message": "Invalid ad type."})
+    else:
+        pictures = None
+        insepctions = None
+        if ad_type == 'rent':
+            pictures = Rent_Item_Picture.objects.filter(ad_item = ad_item).order_by('id')
+            insepctions = Rent_Item_Inspection.objects.filter(ad_item = ad_item).order_by('id')
+        else:
+            pictures = Buy_Item_Picture.objects.filter(ad_item = ad_item).order_by('id')
+            insepctions = Buy_Item_Inspection.objects.filter(ad_item = ad_item).order_by('id')
+        if pictures:
+            pic_loop_times = range(len(pictures)+1,7)
+        else:
+            pic_loop_times = range(1,7)
+            
+        if insepctions:
+            insp_loop_times = range(len(insepctions)+1,5)
+        else:
+            insp_loop_times = range(1,5)
+            
+        ad_types = Buy_Item_Ad_Type.objects.all()
+        property_types = Property_Type.objects.all().order_by('name')
+        bedrooms = range(1,7)
+        bathrooms = range(1,7)
+        parking = range(0,5)
+        garages = range(0,5)
+        context ={"ad_type":ad_type, "ad_item":ad_item, "ad_types":ad_types, "property_types":property_types, "bedrooms":bedrooms, "bathrooms":bathrooms, "parking":parking, "garages":garages, "pictures":pictures, "pic_loop_times":pic_loop_times, "insepctions":insepctions, "insp_loop_times":insp_loop_times,}
+        return render(request, "my_ad_edit.html", context)
