@@ -1331,3 +1331,31 @@ def payment_packages(request,ad_id, ad_type):
     else:
         context = {"ad_id":ad_id,"ad_type":ad_type,}
         return render(request, "payment_pkg.html", context)
+
+    
+# view Live Ads posted by login user
+@login_required(login_url='login')
+def view_my_ads(request):
+    search_type = request.GET.get('search_type','')
+    ad_items = None
+    dict_photo_items = {}
+    if search_type and search_type == 'rent':
+        ad_items = Rent_Ad_Item.objects.filter(user=request.user, payment=True).order_by('-date_time')
+
+        for rent_ad_item in ad_items:
+            # laod photos for each ad item
+            photo_items = Rent_Item_Picture.objects.filter(ad_item =rent_ad_item)
+            if photo_items:
+                dict_photo_items[rent_ad_item.id] = photo_items
+    else:
+        search_type = 'sale'
+        ad_items = Buy_Ad_Item.objects.filter(user=request.user, payment=True).order_by('-date_time')
+
+        for buy_ad_item in ad_items:
+            # laod photos for each ad item
+            photo_items = Buy_Item_Picture.objects.filter(ad_item =buy_ad_item)
+            if photo_items:
+                dict_photo_items[buy_ad_item.id] = photo_items 
+                    
+    context ={"ad_items":ad_items, "photo_items":dict_photo_items,"search_type":search_type,}
+    return render(request, "my_ads.html", context)
