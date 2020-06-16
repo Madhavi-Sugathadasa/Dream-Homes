@@ -1291,3 +1291,11 @@ def payment_success(request):
         request.session['CHECKOUT_SESSION_ID'] = None
         
     return HttpResponseRedirect(reverse("my_ad_more_details",args=(ad_item.id, ad_type,)))
+
+
+# stripe payment cancel page
+@login_required(login_url='login')
+def payment_cancel(request):
+    ad_id = request.session['AD_ID']
+    ad_type = request.session['AD_TYPE']
+    return HttpResponseRedirect(reverse("my_saved_ad_more_details",args=(ad_id, ad_type,)))
