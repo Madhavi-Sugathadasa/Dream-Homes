@@ -1181,3 +1181,52 @@ def delete_floorplan(request, ad_id, ad_type ,pic_type):
     else:
         return HttpResponseRedirect(reverse("edit_saved_ad", args=[ad_id, ad_type]))
     
+    
+# payemnt redirection processing page, Stripe products and prices were created upfront using its dashboard
+@login_required(login_url='login')
+def payment(request, ad_type, ad_id, payment_pkg):
+
+    try:
+        ad_item= None
+        price_id  = None
+        if ad_type == 'rent':
+            ad_item = Rent_Ad_Item.objects.get(pk=ad_id, user=request.user)
+            # Stripe products and prices were created upfront, below ids copied from dashbaord in order to retrive
+            if payment_pkg == 'STD':
+                price_id ='price_1GwIGDCyCCbzUhmXeOTQChz5'
+            else:
+                price_id ='price_1GwIGiCyCCbzUhmXVUeCdM9P'
+        else:
+            ad_item = Buy_Ad_Item.objects.get(pk=ad_id, user=request.user)
+            if payment_pkg == 'STD':
+                price_id ='price_1GwIDeCyCCbzUhmXO6YiTDU7' 
+            else:
+                price_id ='price_1GwIFKCyCCbzUhmXKBti8Q8R'
+                
+        if not ad_item or not price_id:
+            return render(request, "error.html", {"message": "Invalid request."})
+        else:
+            price = stripe.Price.retrieve(price_id)
+            
+            if not price:
+                return render(request, "error.html", {"message": "Invalid request."})
+
+            stripe_price_items = {"price":price.id,'quantity': 1,}
+            
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[stripe_price_items],
+                mode='payment',
+                success_url=getattr(settings, "PAYMENT_SUCCESS_URL", None),
+                cancel_url=getattr(settings, "PAYMENT_CANCEL_URL", None),
+            )
+            
+            context = {"STRIPE_PUBLISHABLE_API_KEY":getattr(settings, "STRIPE_PUBLISHABLE_API_KEY", None),"CHECKOUT_SESSION_ID":session.id,}
+            request.session['AD_ID'] = ad_id
+            request.session['AD_TYPE'] = ad_type
+            request.session['PAYMENT_PKG'] = payment_pkg
+            request.session['CHECKOUT_SESSION_ID'] = session.id
+            
+            return render(request, "payment.html", context)
+    except stripe.error.InvalidRequestError:
+        render(request, "error.html", {"message": "Invalid request."})
