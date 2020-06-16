@@ -1417,3 +1417,34 @@ def my_ad_more_details(request, ad_id, ad_type):
       "item": item,"photo_items":photo_items, "inspections":inspections, "ad_type":ad_type,"GOOGLE_MAP_KEY":conf_settings.GOOGLE_MAP_KEY,
     }
     return render(request, "my_ad_item.html", context)
+
+
+# more details of a selected saved non-live Ad
+@login_required(login_url='login')
+def my_saved_ad_more_details(request, ad_id, ad_type):
+    
+    try:
+        if ad_type and ad_type == 'rent':
+            item = Rent_Ad_Item.objects.get(user=request.user, pk=ad_id, payment=False)
+            photo_items = Rent_Item_Picture.objects.filter(ad_item =item)
+            inspections = Rent_Item_Inspection.objects.filter(ad_item =item).order_by('from_time').order_by('date')
+        else:
+            item = Buy_Ad_Item.objects.get(user=request.user, pk=ad_id, payment=False)
+            photo_items = Buy_Item_Picture.objects.filter(ad_item =item)
+            inspections = Buy_Item_Inspection.objects.filter(ad_item =item).order_by('from_time').order_by('date')
+    except Buy_Ad_Item.DoesNotExist:
+        return render(request, "error.html", {"message": "item does not exist."})
+    except Rent_Ad_Item.DoesNotExist:
+        return render(request, "error.html", {"message": "item does not exist."})
+    except Buy_Item_Picture.DoesNotExist:
+        return render(request, "error.html", {"message": "photo items does not exist."})
+    except Rent_Item_Picture.DoesNotExist:
+        return render(request, "error.html", {"message": "photo items does not exist."})
+    except Buy_Item_Inspection.DoesNotExist:
+        return render(request, "error.html", {"message": "inspection items does not exist."})
+    except Rent_Item_Inspection.DoesNotExist:
+        return render(request, "error.html", {"message": "inspection items does not exist."})
+    context = {
+      "item": item,"photo_items":photo_items, "inspections":inspections, "ad_type":ad_type,"GOOGLE_MAP_KEY":conf_settings.GOOGLE_MAP_KEY,
+    }
+    return render(request, "my_saved_ad_item.html", context)
