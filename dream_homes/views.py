@@ -41,7 +41,7 @@ def login_view(request):
     else:
         request.session.clear()
         return render(request, "users/login.html", {"message": None})
-
+    
 #register a new user   
 def register_view(request):
     if request.method == "POST":
@@ -77,13 +77,11 @@ def register_view(request):
             return render(request, "users/login.html", {"message": "Invalid credentials."})
     else:
         return render(request, "users/register.html", {"message":None})
-
     
 # logout view
 def logout_view(request):
     logout(request)
     return render(request, "users/login.html", {"message": None})
-
 
 # forgot password, recover through an email
 def forgot_password(request):
@@ -92,8 +90,6 @@ def forgot_password(request):
     else:
         return render(request, 'users/forgot_password.html')
 
-    
-    
 #index page
 @login_required(login_url='login')
 def index(request):
@@ -326,7 +322,6 @@ def index(request):
     
     return render(request, "index.html", context)
 
-
 # ajax call for location autocomplete
 def autocomplete_location(request):
     if request.is_ajax():
@@ -369,7 +364,6 @@ def ad_more_details(request, ad_id, ad_type):
       "item": item,"photo_items":photo_items, "inspections":inspections, "ad_type":ad_type,"GOOGLE_MAP_KEY":conf_settings.GOOGLE_MAP_KEY,
     }
     return render(request, "item.html", context)
-
 
 # post a new Ad    
 @login_required(login_url='login')
@@ -598,8 +592,8 @@ def post_ad(request):
         garages = range(0,5)
         context ={"ad_types":ad_types, "property_types":property_types, "bedrooms":bedrooms, "bathrooms":bathrooms, "parking":parking, "garages":garages}
         return render(request, "post_ad.html", context)
-
     
+
 # edit details of already posted Live Ad
 @login_required(login_url='login')
 def edit_ad(request, ad_id, ad_type):
@@ -847,8 +841,8 @@ def edit_ad(request, ad_id, ad_type):
         garages = range(0,5)
         context ={"ad_type":ad_type, "ad_item":ad_item, "ad_types":ad_types, "property_types":property_types, "bedrooms":bedrooms, "bathrooms":bathrooms, "parking":parking, "garages":garages, "pictures":pictures, "pic_loop_times":pic_loop_times, "insepctions":insepctions, "insp_loop_times":insp_loop_times,}
         return render(request, "my_ad_edit.html", context)
-
     
+
 # edit details of non-Live ads
 @login_required(login_url='login')
 def edit_saved_ad(request, ad_id, ad_property_type):
@@ -1107,8 +1101,8 @@ def edit_saved_ad(request, ad_id, ad_property_type):
         garages = range(0,5)
         context ={"ad_property_type":ad_property_type, "ad_item":ad_item, "ad_types":ad_types, "property_types":property_types, "bedrooms":bedrooms, "bathrooms":bathrooms, "parking":parking, "garages":garages, "pictures":pictures, "pic_loop_times":pic_loop_times, "insepctions":insepctions, "insp_loop_times":insp_loop_times,}
         return render(request, "my_saved_ad_edit.html", context)
+ 
 
-    
  # delete already uploaded photos
 @login_required(login_url='login')
 def delete_pic(request, ad_id, ad_type, pic_id,pic_type):
@@ -1150,7 +1144,7 @@ def delete_pic(request, ad_id, ad_type, pic_id,pic_type):
         return HttpResponseRedirect(reverse("edit_saved_ad", args=[ad_id, ad_type]))
 
     
-# delete already uploaded floorplan
+ # delete already uploaded floorplan
 @login_required(login_url='login')
 def delete_floorplan(request, ad_id, ad_type ,pic_type):
     ad_item = None
@@ -1180,7 +1174,6 @@ def delete_floorplan(request, ad_id, ad_type ,pic_type):
         return HttpResponseRedirect(reverse("edit_ad", args=[ad_id, ad_type]))
     else:
         return HttpResponseRedirect(reverse("edit_saved_ad", args=[ad_id, ad_type]))
-    
     
 # payemnt redirection processing page, Stripe products and prices were created upfront using its dashboard
 @login_required(login_url='login')
@@ -1230,8 +1223,7 @@ def payment(request, ad_type, ad_id, payment_pkg):
             return render(request, "payment.html", context)
     except stripe.error.InvalidRequestError:
         render(request, "error.html", {"message": "Invalid request."})
-
-        
+            
 # stripe payment success page           
 @login_required(login_url='login')
 def payment_success(request):
@@ -1291,16 +1283,14 @@ def payment_success(request):
         request.session['CHECKOUT_SESSION_ID'] = None
         
     return HttpResponseRedirect(reverse("my_ad_more_details",args=(ad_item.id, ad_type,)))
-
-
+ 
 # stripe payment cancel page
 @login_required(login_url='login')
 def payment_cancel(request):
     ad_id = request.session['AD_ID']
     ad_type = request.session['AD_TYPE']
     return HttpResponseRedirect(reverse("my_saved_ad_more_details",args=(ad_id, ad_type,)))
-
-
+    
 # for saved ads which are not paid, will have a “Pay Now” link. Once clicked on this link user will be taken to this view where they can select the ad package depending on rent ad or sale item and pay for it in order to make the Ad live
    
 @login_required(login_url='login')
@@ -1333,6 +1323,7 @@ def payment_packages(request,ad_id, ad_type):
         return render(request, "payment_pkg.html", context)
 
     
+    
 # view Live Ads posted by login user
 @login_required(login_url='login')
 def view_my_ads(request):
@@ -1359,7 +1350,6 @@ def view_my_ads(request):
                     
     context ={"ad_items":ad_items, "photo_items":dict_photo_items,"search_type":search_type,}
     return render(request, "my_ads.html", context)
-
 
 # view saved non-Live Ads posted by login user
 @login_required(login_url='login')
@@ -1418,7 +1408,6 @@ def my_ad_more_details(request, ad_id, ad_type):
     }
     return render(request, "my_ad_item.html", context)
 
-
 # more details of a selected saved non-live Ad
 @login_required(login_url='login')
 def my_saved_ad_more_details(request, ad_id, ad_type):
@@ -1448,3 +1437,69 @@ def my_saved_ad_more_details(request, ad_id, ad_type):
       "item": item,"photo_items":photo_items, "inspections":inspections, "ad_type":ad_type,"GOOGLE_MAP_KEY":conf_settings.GOOGLE_MAP_KEY,
     }
     return render(request, "my_saved_ad_item.html", context)
+        
+        
+        
+# send an email to seller inquiring about selected ad
+@login_required(login_url='login')
+def send_message(request):
+    if request.is_ajax():
+        ad_id = request.POST.get('ad_id', None)
+        ad_type = request.POST.get('ad_type', 'buy')
+        first_name = request.POST.get('first_name', None)
+        last_name = request.POST.get('last_name', None)
+        email = request.POST.get('email', None)
+        mobile = request.POST.get('mobile', None)
+        message = request.POST.get('message', None)
+        ad_item = None
+        if not ad_id or not message or not ad_type or not first_name or not last_name or not email:
+            data = {
+                "result":"ERROR"
+            }
+            return JsonResponse(data)
+        else:
+            try:
+                if ad_type == 'rent':
+                    ad_item = Rent_Ad_Item.objects.get(pk = ad_id)
+                else:
+                    ad_item = Buy_Ad_Item.objects.get(pk = ad_id)
+                if not ad_item:
+                    data = {
+                        "result":"ERROR"
+                    }
+                    return JsonResponse(data)
+                else:
+                    try:
+                        property_id = None
+                        if ad_type == 'rent':
+                            property_id = "R_"+str(ad_id)
+                        else:
+                            property_id = "B_"+str(ad_id)
+                            
+                        address  = ad_item.address_line + "," + str(ad_item.location)  
+                        context ={"message":message,"property_id":property_id, "first_name":first_name,"last_name":last_name,"email":email, "mobile":mobile,"address":address}
+                        html_message = render_to_string('contact_mail_template.html',context)
+                        plain_message = strip_tags(html_message)
+                        plain_message = strip_tags(html_message)
+                        send_mail("RE: " + address , plain_message, conf_settings.EMAIL_HOST_USER, [ad_item.email, email ], html_message=html_message)
+                        data = {
+                            "result":"SUCCESS"
+                        }
+                        return JsonResponse(data)
+                    except BadHeaderError:
+                        data = {
+                            "result":"ERROR"
+                        }
+                        return JsonResponse(data)
+                    
+            except Rent_Ad_Item.DoesNotExist:
+                data = {
+                    "result":"ERROR"
+                }
+                return JsonResponse(data)
+            except Buy_Ad_Item.DoesNotExist:
+                data = {
+                    "result":"ERROR"
+                }
+                return JsonResponse(data)
+    
