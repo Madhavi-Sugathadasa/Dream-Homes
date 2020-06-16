@@ -1299,3 +1299,35 @@ def payment_cancel(request):
     ad_id = request.session['AD_ID']
     ad_type = request.session['AD_TYPE']
     return HttpResponseRedirect(reverse("my_saved_ad_more_details",args=(ad_id, ad_type,)))
+
+
+# for saved ads which are not paid, will have a “Pay Now” link. Once clicked on this link user will be taken to this view where they can select the ad package depending on rent ad or sale item and pay for it in order to make the Ad live
+   
+@login_required(login_url='login')
+def payment_packages(request,ad_id, ad_type):
+    try:
+        if ad_type == 'rent':
+            ad_item = Rent_Ad_Item.objects.get(user = request.user, pk = ad_id)
+        else:
+            ad_item = Buy_Ad_Item.objects.get(user = request.user, pk = ad_id)
+            
+        if not ad_item:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    except Rent_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    except Buy_Ad_Item.DoesNotExist:
+            return render(request, "error.html", {"message": "You are not authorised to update this item"})
+    if request.method == "POST":
+        if ad_type == 'rent':
+            payment_pkg = request.POST["rent_payment_pkg"]
+        else:
+            payment_pkg = request.POST["payment_pkg"]
+            
+        ad_id = ad_item.id
+        property_ad_type = ad_type
+        payment_pkg_type = payment_pkg
+        return HttpResponseRedirect(reverse("payment",args=(property_ad_type, ad_id, payment_pkg_type,))) 
+    
+    else:
+        context = {"ad_id":ad_id,"ad_type":ad_type,}
+        return render(request, "payment_pkg.html", context)
