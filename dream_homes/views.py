@@ -1230,3 +1230,64 @@ def payment(request, ad_type, ad_id, payment_pkg):
             return render(request, "payment.html", context)
     except stripe.error.InvalidRequestError:
         render(request, "error.html", {"message": "Invalid request."})
+
+        
+# stripe payment success page           
+@login_required(login_url='login')
+def payment_success(request):
+    
+    # when stripe payment is success, it will redirect here
+    # TODO :: we need to integrate stripe WEBHOOK before redirect here, since webhook can not setup with local host I havent integrate it yet
+    # check session ids are equal
+    payment_session_id = request.session['CHECKOUT_SESSION_ID']
+    
+    session_id_from_url = ""
+    try:
+        session_id_from_url = request.GET["session_id"]
+    except KeyError:
+        return render(request, "error.html", {"message": "Invalid request."})
+    if payment_session_id != session_id_from_url:
+        return render(request, "error.html", {"message": "Invalid request."})
+    
+    ad_id = request.session['AD_ID']
+    ad_type = request.session['AD_TYPE']
+    payment_pkg = request.session['PAYMENT_PKG']
+    
+    if ad_type == 'rent':
+        ad_item = Rent_Ad_Item.objects.get(pk=ad_id, user=request.user)
+        if not ad_item:
+            return render(request, "error.html", {"message": "Invalid request."})
+        ad_item.payment = True
+        ad_item.payemnt_session = payment_session_id
+        if payment_pkg == 'PRM':
+            ad_item.payment_pkg = 'PRM'
+            ad_item.priority = 2
+            ad_item.amount_paid = 400
+        else:
+            ad_item.payment_pkg = 'STD'
+            ad_item.priority = 1
+            ad_item.amount_paid = 250
+        ad_item.save()
+    else:
+        ad_item = Buy_Ad_Item.objects.get(pk=ad_id, user=request.user)
+        if not ad_item:
+            return render(request, "error.html", {"message": "Invalid request."})
+        ad_item.payment = True
+        ad_item.payemnt_session = payment_session_id
+        if payment_pkg == 'PRM':
+            ad_item.payment_pkg = 'PRM'
+            ad_item.priority = 2
+            ad_item.amount_paid = 1000
+        else:
+            ad_item.payment_pkg = 'STD'
+            ad_item.priority = 1
+            ad_item.amount_paid = 750
+        ad_item.save()
+        
+        #clear session values
+        request.session['AD_ID'] = None
+        request.session['AD_TYPE'] = None
+        request.session['PAYMENT_PKG'] = None
+        request.session['CHECKOUT_SESSION_ID'] = None
+        
+    return HttpResponseRedirect(reverse("my_ad_more_details",args=(ad_item.id, ad_type,)))
