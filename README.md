@@ -123,3 +123,33 @@ Under each Ad there is a **“Edit” link** where users are able to edit the de
 Under each ad on Saved Ads section there are links for ‘Edit” or “pay Now”. If users click on “Pay Now” then they can select the ad package and go to Stripe payment page.
 
 ---
+
+### **Technical Details:**
+
+Developed using **JavaScript**, **Python**, and **SQL**. Used **Django**, **sqlite3 DB**, **jQuery** and **Bootstrap**.
+
+**Below is a brief description about the project structure:**
+
+Used Django’s **in built Authentication and Authorisation system** for user registration, login, logout and forgot password sections.
+
+---
+
+**12 tables were used** in the sqlite3 DB apart from the Django’s inbuilt user tables.
+```
+    1.  Locations table (Location Model) - maintain a list of all suburbs in Australia including their postcode, state, longitude and latitude. I was able to find a free csv file online with above details. I wrote a python function to insert data into the table by reading the csv file
+    2.  Buy_ad_items  table (Buy_Ad_Item Model)  - maintain a list of all sale properties posted by sellers
+    3.  Buy_item_inspections table (Buy_Item_Inspection Model)  - maintain inspection details of sale properties - date & time of each inspection, seller can enter up to 4 inspections
+    4.  Buy_item_pictures table (Buy_Item_Picture Model)  - maintain pictures of sale properties, up to 6 Images
+    5.  Buy_item_ad_types table (Buy_Item_Ad_Type Model)  - maintain list of sale item types
+    6.  Rent_ad_items table (Rent_Ad_Item Model)  - maintain a list of all rent properties posted by sellers
+    7.  Rent_item_inspections table (Rent_Item_Inspection Model)  - maintain inspection details of rent properties - date & time of each inspection, seller can enter up to 4 inspections
+    8.  Rent_item_pictures table (Rent_Item_Picture Model)  - Keep pictures of rent properties, up to 6 Images
+    9.  Property_types table (Property_Type Model)  - maintain a list of all property types
+    10.  Bedroom table (Bedroom Model)  - maintain a list of numbers of bedroom categories 
+    11.  Bathroom table (Bathroom Model)  - maintain a list of number of bathroom categories
+    12.  Parkings table (Parking Model)  - maintain a list of numbers of parking categories
+```
+
+----
+
+
