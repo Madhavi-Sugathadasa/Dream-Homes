@@ -276,4 +276,9 @@ I was able to find a free csv file online with Australian suburb details which i
 
 ---
 
+**templatetags/template_filters.py**
+
+Extended the template engine by defining custom tags and filters using Python, and then make them available to the templates using the {% load %} tag.
+
+---
 
