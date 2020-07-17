@@ -56,3 +56,56 @@ Following details are displayed on this page:
     Additional description about the property
 ```
 ---
+
+4. **_Post an Ad_**
+
+Once logged in, users are able to post an Ad about rental or sale of property. They can pay now and make ad live or save now & pay later in order to make it live
+
+Following details need to be provided in order to publish a sale Ad:
+```
+    Select preferred AD package - Standard or Premium
+    From Price
+    To price
+    Ad type - for sale or for auction or contact agent or under contract
+    Title
+    Description
+    Property Type - (i.e. whether it is a Apartment or House or Townhouse etc..)
+    Auction Date - if available 
+    Address Line
+    Location -  (select suburb, state and postcode from autocomplete dropdown)
+    No of bedrooms (select from a dropdown list)
+    No of bathrooms (select from a dropdown list)
+    No of Parking (select from a dropdown list)
+    Garages (select from a dropdown list)
+    Land Area - if available
+    Contact name
+    Email
+    Mobile
+    Floor plan - upload if available 
+    Upload up to 6 images. At leases one image required
+    Upcoming inspection dates if available 
+    Finally user need to accept terms and condition of posting an Ad.
+```
+
+Following details need to be provided in order to publish a rental Ad:
+```
+    Select preferred AD package - Standard or Premium
+    Weekly price
+    Title
+    Description
+    Property Type - (i.e. whether it is a Apartment or House or Townhouse etc..)
+    Address Line
+    Location -  (select suburb, state and postcode from autocomplete dropdown)
+    No of bedrooms (select from a dropdown list)
+    No of bathrooms (select from a dropdown list)
+    No of Parking (select from a dropdown list)
+    Garages (select from a dropdown list)
+    Contact name
+    Email
+    Mobile
+    Floor plan - upload if available 
+    Upload up to 6 images. At leases one image required
+    Upcoming inspection dates if available 
+    Finally user need to accept terms and condition of posting an Ad
+```   
+---
