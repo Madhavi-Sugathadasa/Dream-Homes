@@ -263,3 +263,10 @@ Upon successful payment, users will be redirected to payment_success view where 
 **_Note_** - When your customer completes a payment, Stripe redirects them to the URL that we specified in the success_url parameter. There are several ways you can confirm that the payment is successful. you can use Stripe dashboard for manual process. I decided to use a webhook , but I couldn’t create a webhook using localhost. So I didn’t implement that part.
 
 ---
+
+**Sending Emails**
+
+Buyers can contact sellers via emails (there is a link on ad more details page named “Quick property inquiry”). Sending of an email is handled by the email backend of Django
+
+---
+
