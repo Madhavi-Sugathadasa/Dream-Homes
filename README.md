@@ -180,6 +180,46 @@ Used Django’s **in built Authentication and Authorisation system** for user re
 
 ---
 
+Following  **configurable parameters** were added to **settings.py**
+  
+Following variables were configured for email send functionality: 
+```    
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = (this was configured using environment variable )
+    EMAIL_HOST_PASSWORD = (this was configured using environment variable )
+    DEFAULT_FROM_EMAIL = (this was configured using environment variable )
+```
+
+Added following configureable parameters to configure image save path:
+```
+    MEDIA_URL = "/Media/"
+    MEDIA_PATH = "Media"
+```
+Added following configureable parameters to display currency & its symbol:
+```    
+    CURRENCY = 'AUD'
+    CURRENCY_SYMBOL =‘$'
+```
+Added following configureable parameters to keep no of Ads per page:
+```
+    NO_OF_ADS_PER_PAGE =9
+```
+Added following configureable parameters to keep Stripe payment function:
+```    
+    STRIPE_PUBLISHABLE_API_KEY =  (this was configured using environment variable )
+    STRIPE_SECRET_API_KEY =  (this was configured using environment variable )
+    PAYMENT_SUCCESS_URL ='http://127.0.0.1:8000/payment_success?session_id={CHECKOUT_SESSION_ID}'
+    PAYMENT_CANCEL_URL ='http://127.0.0.1:8000/payment_cancel'
+```
+Added following configureable parameter to keep Google Map key:
+```
+    GOOGLE_MAP_KEY =  (this was configured using environment variable )
+```
+
+---
 
 
 
