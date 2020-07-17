@@ -115,3 +115,11 @@ Following details need to be provided in order to publish a rental Ad:
 If users select  “Go to Payment” link on above, then they will be redirected to **Stripe payment** page where user will be able to enter their credit card details and make a payment. If a user decided to click “cancel payment” the item will be saved without a payment and redirected to details page where they can edit or make payments. But if payment is successful, ad will be Live and user can edit it if needed
 
 ---
+
+6. **_View & Edit Ads posted by me (My Ads)_**
+
+There is a link at the top of navigation bar named “My Ads”. Once they click on this link, users are able to see list of all Live or Saved Ads which are posted by them (for sale and for rent items are listed in two separate tabs)
+Under each Ad there is a **“Edit” link** where users are able to edit the details of Ads which are already published.
+Under each ad on Saved Ads section there are links for ‘Edit” or “pay Now”. If users click on “Pay Now” then they can select the ad package and go to Stripe payment page.
+
+---
