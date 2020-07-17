@@ -245,4 +245,21 @@ gcc -g -fPIC -dynamiclib extension-functions.c -o math
 
 ---
 
+**Payment with Stripe**
 
+When posting an add, once users click on “Go to Payment”, then they will be redirected to Stripe’s payment page.
+
+Stripe products and prices were created upfront using its dashboard. There were 4 products and 4 price items as follows:
+```
+    STANDARD AD - For Sale item product with price item AUD 750 recurring one time
+    PREMIUM AD - For sale item product with price item AUD 1000 recurring one time
+    STANDARD AD - For rent item product with price item AUD 250 recurring one time
+    PREMIUM AD - For rent item product with price item AUD 400 recurring one time
+```
+
+Upon successful payment, users will be redirected to payment_success view where a Live ad will be created and saved to Database. If user clicks back link on Stripe payment page, then user will be taken to payment_cancel view which will save the ad into database, but that ad will not be Live until payment is fulfilled.  
+
+
+**_Note_** - When your customer completes a payment, Stripe redirects them to the URL that we specified in the success_url parameter. There are several ways you can confirm that the payment is successful. you can use Stripe dashboard for manual process. I decided to use a webhook , but I couldn’t create a webhook using localhost. So I didn’t implement that part.
+
+---
