@@ -282,3 +282,11 @@ Extended the template engine by defining custom tags and filters using Python, a
 
 ---
 
+**JQuery was used for writing javascript** and **Bootstrap used for CSS** together with css classes written by me.
+
+---
+
+**All pages were responsive** either in a smaller screen (mobile screen) or a larger screen.
+
+---
+
