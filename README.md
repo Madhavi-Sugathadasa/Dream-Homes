@@ -221,5 +221,28 @@ Added following configureable parameter to keep Google Map key:
 
 ---
 
+**_NOTE:_**
+
+In order to implement filter functionality for getting the ad items from suburbs within  25 kilometres of a given location, I had to use sqlite3 math extension to get acos, cos, sin, radians of given longitudes and latitudes. Sqlite3 was built with extension loading disabled. So I had to install sqlite3 via Homebrew and then build Python from scratch with the appropriate sqlite3 library linked.
+
+Following commands were run in order to enable above functionality:
+
+```
+    brew install sqlite3
+    brew install xz
+    brew install openssl
+    brew install gdbm
+    brew install pyenv
+```
+
+PYTHON_CONFIGURE_OPTS="--enable-loadable-sqlite-extensions --enable-optimizations --with-openssl=/usr/bin/openssl" LDFLAGS="-L/usr/local/Cellar/sqlite/3.32.1/lib -L/usr/local/opt/zlib/lib" CPPFLAGS="-I/usr/local/Cellar/sqlite/3.32.1/include -I/usr/local/opt/zlib/include" pyenv install 3.8.2
+
+Reference : https://stackoverflow.com/questions/57977481/how-to-use-enable-load-extension-from-sqlite3
+
+Also I had to download following extension-functions.c file for Sqlite web  (https://www.sqlite.org/contrib/download/extension-functions.c?get=25) and compile it using following command before using it in the python code
+
+gcc -g -fPIC -dynamiclib extension-functions.c -o math
+
+---
 
 
