@@ -152,4 +152,34 @@ Used Django’s **in built Authentication and Authorisation system** for user re
 
 ----
 
+**21 views were used** on views.py
+
+```
+    1. login_view  - user login 
+    2. register_view - user registration
+    3. logout_view - user logout
+    4. forgot_password - resetting password if you forgot it. Email link will be sent to user’s email
+    5. index - home page. there are two tabs named ‘Buy’ and ‘Rent’, users are able to see all live property listings
+    6. autocomplete_location - ajax based autocomplete for location
+    7. ad_more_details - view more details of a selected Ad
+    8. post_ad - post an ad either sale or rental property
+    9. edit_ad - edit Live ad (paid ads)
+    10. edit_saved_ad - edit non Live ads which are saved. (not paid ads)
+    11. delete_pic - delete Images uploaded for an ad
+    12. delete_floorplan - delete floor plan image uploaded for an ad
+    13. payment - process payment redirection to stripe payment page.  Depending on the package,  user selected price items will be retrieved from stripe Api.
+    14. payment_success  - when a payment is successful, user will be redirected to this view by stripe
+    15. payment_cancel - when a payment is canceled from stripe payment page, user will be redirected to this view by stripe
+    16. payment_packages - for saved ads which are not paid, will have a “Pay Now” link. Once clicked on this link user will be taken to this view where they can select the ad package depending on rent ad or sale item and pay for it in order to make the Ad live
+    17. view_my_ads - view list of live ads published by logged in user. 
+    18. view_my_saved_ads - view list of non live (saved ads without payment) ads published by logged in user. 
+    19. my_ad_more_details - more details of selected live ad, published by logged in user
+    20. my_saved_ad_more_details - more details of non-live ad (saved ads without payment) published by logged in user
+    21. send_message  - send email to seller
+```
+
+---
+
+
+
 
