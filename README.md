@@ -109,3 +109,9 @@ Following details need to be provided in order to publish a rental Ad:
     Finally user need to accept terms and condition of posting an Ad
 ```   
 ---
+
+5. **_Payment_**
+
+If users select  “Go to Payment” link on above, then they will be redirected to **Stripe payment** page where user will be able to enter their credit card details and make a payment. If a user decided to click “cancel payment” the item will be saved without a payment and redirected to details page where they can edit or make payments. But if payment is successful, ad will be Live and user can edit it if needed
+
+---
