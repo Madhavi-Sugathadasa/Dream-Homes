@@ -40,3 +40,19 @@ Each list item displays a summary of Ad details including an image slider, no of
 **Pagination is available** on this page. Currently displays nine Ads per page & it is a configurable parameter.
 
 ---
+
+3. **_More Details page_**
+
+Once users click on “Details” link from a selected Ad, they are able to see **additional details** about the Ad. Especially they are able to send messages to the seller from this page.
+
+Following details are displayed on this page:
+```
+    Image slider to see all uploaded Images
+    Property address on a Google map view
+    No of bedrooms, bathrooms and Parking
+    Floor plan if uploaded
+    Auction date & time if available 
+    Inspection dates and times if available
+    Additional description about the property
+```
+---
