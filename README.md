@@ -270,3 +270,10 @@ Buyers can contact sellers via emails (there is a link on ad more details page n
 
 ---
 
+**Import.py  & australian_postcodes.csv**
+
+I was able to find a free csv file online with Australian suburb details which is named australian_postcodes.csv. import.py python file were used to insert data in to the location table by reading the csv file
+
+---
+
+
