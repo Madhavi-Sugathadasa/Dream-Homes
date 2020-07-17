@@ -11,4 +11,10 @@ You can create an advertisement now and save it and pay later. But, if you saved
 
 ---
 
+### **Features:**
 
+1. **_Registration, Login, Logout, forgot password_**
+
+Site users are able to register for the web application with a username, password, first name, last name and email address. Users are able to log in and log out of the website. If users forget their passwords, they can reset the password via an email reset password link.
+
+---
