@@ -1,5 +1,5 @@
 # Dream Homes :house: :house_with_garden:
-AA web application named **Dream Homes ** was created  for advertising **real estate properties** in Australia in order to find the latest **homes for sale or rent**. using **Python (Django), jQuery, SQLite3, HTML5, CSS3 &amp; Bootstrap**
+AA web application named **Dream Homes** was created  for advertising **real estate properties** in Australia in order to find the latest **homes for sale or rent**. using **Python (Django), jQuery, SQLite3, HTML5, CSS3 &amp; Bootstrap**
 
 View Screencast on https://youtu.be/ys027FniCmQ
 
